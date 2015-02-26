@@ -62,7 +62,8 @@
 	@private NSData *m_specialPayload_AnnotationsCSS;
 	@private NSData *m_specialPayload_MathJaxJS;
 	@private RDSpineItem *m_spineItem;
-	@private __weak UIWebView *m_webView;
+    @private __weak UIWebView *m_webView;
+    @private UIActivityIndicatorView *m_activityIndicatorView;
 }
 
 - (void)passSettingsToJavaScript;
@@ -302,6 +303,10 @@
 	webView.allowsInlineMediaPlayback = YES;
 	webView.mediaPlaybackRequiresUserAction = NO;
 	[self.view addSubview:webView];
+    
+    m_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    m_activityIndicatorView.hidesWhenStopped = YES;
+    [self.view addSubview:m_activityIndicatorView];
 
 	NSURL *url = [[NSBundle mainBundle] URLForResource:@"reader.html" withExtension:nil];
 	[webView loadRequest:[NSURLRequest requestWithURL:url]];
@@ -563,6 +568,7 @@
 
 - (void)viewDidLayoutSubviews {
 	m_webView.frame = self.view.bounds;
+    m_activityIndicatorView.center = m_webView.center;
 }
 
 
@@ -591,7 +597,7 @@
 	BOOL shouldLoad = YES;
 	NSString *url = request.URL.absoluteString;
 	NSString *s = @"epubobjc:";
-
+    
 	if ([url hasPrefix:s]) {
 		url = [url substringFromIndex:s.length];
 		shouldLoad = NO;
@@ -705,9 +711,20 @@
 			return shouldLoad;
 		}
 	}
-
+    
 	return shouldLoad;
 }
 
+- (void)webViewDidStartLoad:(UIWebView *)webView {
+    [m_activityIndicatorView startAnimating];
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+    [m_activityIndicatorView stopAnimating];
+}
+
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
+    [m_activityIndicatorView stopAnimating];
+}
 
 @end
