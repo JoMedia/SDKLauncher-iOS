@@ -3,4 +3,4 @@
 url=https://github.com/JoMedia/readium-sdk.git
 [submodule "Resources/readium-shared-js"]
 	path = Resources/readium-shared-js
-	url = https://github.com/readium/readium-shared-js.git
+url=https://github.com/JoMedia/readium-shared-js.git
